@@ -17,6 +17,7 @@
 **Fixed:**
 
 * Set ``FEEDSTOCK_NAME`` correctly on Windows in Azure Pipelines. (#1770)
+* Always use ``conda`` to ``uninstall --force``. (#1770)
 
 **Security:**
 
