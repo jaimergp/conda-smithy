@@ -10,7 +10,7 @@ from inspect import cleandoc
 from typing import ClassVar, Literal, Self
 
 CATEGORIES: dict[str, str] = {
-    "CBC": "Only `conda_build_config.yaml`",
+    "CBC": "Issues specific to `conda_build_config.yaml`",
     "CF": "conda-forge specific rules",
     "FC": "Feedstock configuration in `conda-forge.yml`.",
     "R": "All recipe versions",

@@ -257,9 +257,11 @@ class RecipePinnedNumpy(_BaseMessage):
     kind = "lint"
     identifier = "R-017"
     message = (
-        "Using pinned numpy packages is a deprecated pattern.  Consider "
+        "Using pinned numpy packages is a deprecated pattern. Consider "
         "using the method outlined "
-        "[here](https://conda-forge.org/docs/maintainer/knowledge_base.html#linking-numpy)."
+        "[conda-forge.org > Docs > Maintainer Documentation > "
+        "Knowledge Base > Building Against NumPy]"
+        "(https://conda-forge.org/docs/maintainer/knowledge_base.html#linking-numpy)."
     )
 
 
@@ -783,7 +785,9 @@ class RecipeLicenseSPDX(_BaseMessage):
         "License is not an SPDX identifier (or a custom LicenseRef) "
         "nor an SPDX license expression.\n\n"
         "Documentation on acceptable licenses can be found "
-        "[here]( https://conda-forge.org/docs/maintainer/adding_pkgs.html#spdx-identifiers-and-expressions )."
+        "[conda-forge.org > Docs > Maintainer Documentation "
+        "> Contributing packages > SPDX Identifiers and Expressions]"
+        "(https://conda-forge.org/docs/maintainer/adding_pkgs.html#spdx-identifiers-and-expressions)."
     )
 
 
@@ -799,7 +803,9 @@ class RecipeInvalidLicenseException(_BaseMessage):
     message = (
         "License exception is not an SPDX exception.\n\n"
         "Documentation on acceptable licenses can be found "
-        "[here]( https://conda-forge.org/docs/maintainer/adding_pkgs.html#spdx-identifiers-and-expressions )."
+        "[conda-forge.org > Docs > Maintainer Documentation "
+        "> Contributing packages > SPDX Identifiers and Expressions]"
+        "(https://conda-forge.org/docs/maintainer/adding_pkgs.html#spdx-identifiers-and-expressions)."
     )
 
 
@@ -1055,9 +1061,11 @@ class RecipeLegacyToolchain(_BaseMessage):
     kind = "lint"
     identifier = "R0-006"
     message = (
-        "Using toolchain directly in this manner is deprecated.  Consider "
+        "Using toolchain directly in this manner is deprecated. Consider "
         "using the compilers outlined "
-        "[here](https://conda-forge.org/docs/maintainer/knowledge_base.html#compilers)."
+        "[conda-forge.org > Docs > Maintainer Documentation > "
+        "Knowledge Base > Compilers]"
+        "(https://conda-forge.org/docs/maintainer/knowledge_base.html#compilers)."
     )
 
 

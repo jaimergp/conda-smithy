@@ -46,12 +46,11 @@ def _module_classes_in_source_order(module):
 
 @pytest.mark.parametrize("module", MESSAGE_MODULES)
 def test_message_registry_integrity(module):
-    seen_identifiers = set()
+    seen_identifiers = {}
 
     classes = _module_classes_in_source_order(module)
 
     grouped_numbers = defaultdict(list)
-    grouped_identifiers = defaultdict(list)
     for cls in classes:
         identifier = cls.identifier
         match = IDENTIFIER_RE.match(identifier)
@@ -72,20 +71,20 @@ def test_message_registry_integrity(module):
 
         assert identifier not in seen_identifiers, (
             f"Duplicate identifier {identifier} found "
-            f"in {module.__name__}::{cls.__name__}"
+            f"in {module.__name__}::{cls.__name__}, previously defined in "
+            f"{seen_identifiers[identifier].__module__}::"
+            f"{seen_identifiers[identifier].__name__}"
         )
-        seen_identifiers.add(identifier)
+        seen_identifiers[identifier] = cls
 
         grouped_numbers[prefix].append(number)
-        grouped_identifiers[prefix].append(identifier)
 
     # Verify identifiers are sorted within each prefix group
-    for prefix, prefixed_identifiers in grouped_identifiers.items():
-        expected_identifiers = sorted(prefixed_identifiers)
-        assert prefixed_identifiers == expected_identifiers, (
+    for prefix, numbers in grouped_numbers.items():
+        expected_numbers = sorted(numbers)
+        assert numbers == expected_numbers, (
             f"Identifiers for prefix {prefix} in "
-            f"{module.__name__}::{cls.__name__} are not "
-            f"sorted: {prefixed_identifiers}"
+            f"{module.__name__} are not sorted: {[f'{prefix}-{num:03d}' for num in numbers]},"
         )
 
     # Verify identifier sequences have no gaps within each prefix group
