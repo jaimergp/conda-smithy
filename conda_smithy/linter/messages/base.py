@@ -50,8 +50,11 @@ class _BaseMessage:
         Formats the `.message` text by using the dataclass attributes.
 
         Uses `string.Template.safe_substitute`, so `$name` and `${name}` are
-        replacement fields. Literal `$` signs must be written as `$$`.
-        Curly braces are never interpreted and need no escaping.
+        replacement fields. Curly braces are never interpreted and need no
+        escaping. Unrecognised ``$name`` tokens are left as-is by
+        ``safe_substitute``, so a bare ``$`` only needs to be written as ``$$``
+        when it is immediately followed by a valid identifier that is also a
+        key in ``_render_attributes()`` and must not be substituted.
         """
         return cleandoc(Template(self.message).safe_substitute(self._render_attributes()))
 
