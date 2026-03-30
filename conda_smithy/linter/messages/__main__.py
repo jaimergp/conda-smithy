@@ -19,7 +19,7 @@ def generate_docs(output_file: str | None = None) -> str:
     """
     Generate a Markdown file documenting all linter messages
     """
-    from conda_smithy.linter.messages.base import CATEGORIES, _BaseMessage
+    from conda_smithy.linter.messages.base import _BaseMessage
     from conda_smithy.linter.messages.conda_forge import (
         CATEGORIES as CONDA_FORGE_CATEGORIES,
     )
@@ -31,7 +31,12 @@ def generate_docs(output_file: str | None = None) -> str:
         CATEGORIES as RECIPE_CONFIG_CATEGORIES,
     )
 
-    all_categories = CATEGORIES
+    all_categories = {
+        **CONDA_FORGE_CATEGORIES,
+        **FEEDSTOCK_CONFIG_CATEGORIES,
+        **RECIPE_CATEGORIES,
+        **RECIPE_CONFIG_CATEGORIES,
+    }
     module_to_categories = {
         "conda_smithy.linter.messages.conda_forge": list(CONDA_FORGE_CATEGORIES),
         "conda_smithy.linter.messages.feedstock_config": list(
@@ -43,9 +48,6 @@ def generate_docs(output_file: str | None = None) -> str:
     category_to_module = {
         cat: module for module, cats in module_to_categories.items() for cat in cats
     }
-    missing = sorted(set(all_categories) - set(category_to_module))
-    if missing:
-        category_to_module.update({category: "<unassigned>" for category in missing})
 
     if output_file is None:
         # Let's check if we are in a repo or installed

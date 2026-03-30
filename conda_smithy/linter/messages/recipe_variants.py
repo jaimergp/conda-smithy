@@ -4,14 +4,11 @@ Messages concerning variants configuration (`conda_build_config.yaml`, `variants
 
 from dataclasses import dataclass
 
-from conda_smithy.linter.messages.base import (
-    _BaseMessage,
-    CATEGORIES as BASE_CATEGORIES
-)
+from conda_smithy.linter.messages.base import _BaseMessage
 
 CATEGORIES = {
-    "RC": BASE_CATEGORIES["RC"],
-    "CBC": BASE_CATEGORIES["CBC"]
+    "RC": "All recipe variants files",
+    "CBC": "Issues specific to `conda_build_config.yaml`"
 }
 
 # region RC

@@ -4,13 +4,10 @@ Messages exclusive to conda-forge recipes.
 
 from dataclasses import dataclass
 
-from conda_smithy.linter.messages.base import (
-    _BaseMessage,
-    CATEGORIES as BASE_CATEGORIES
-)
+from conda_smithy.linter.messages.base import _BaseMessage
 
 CATEGORIES = {
-    "CF": BASE_CATEGORIES["CF"]
+    "CF": "conda-forge specific rules"
 }
 
 

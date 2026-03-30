@@ -6,7 +6,7 @@ import re
 from collections import defaultdict
 
 import conda_smithy.linter.messages as _messages_pkg
-from conda_smithy.linter.messages.base import CATEGORIES, _BaseMessage
+from conda_smithy.linter.messages.base import _BaseMessage
 
 _EXCLUDED_MODULES = {"base", "__main__"}
 
@@ -63,7 +63,7 @@ def test_message_registry_integrity(module):
         prefix = match.group("prefix")
         number = int(match.group("number"))
 
-        assert prefix in CATEGORIES, (
+        assert prefix in module.CATEGORIES, (
             f"Identifier prefix {prefix} is not "
             "registered in CATEGORIES "
             f"(found in {module.__name__}::{cls.__name__}: {identifier})"

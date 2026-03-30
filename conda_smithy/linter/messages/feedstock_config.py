@@ -4,13 +4,10 @@ Messages concerning feedstock configuration (`conda-forge.yml`)
 
 from dataclasses import dataclass
 
-from conda_smithy.linter.messages.base import (
-    _BaseMessage,
-    CATEGORIES as BASE_CATEGORIES
-)
+from conda_smithy.linter.messages.base import _BaseMessage
 
 CATEGORIES = {
-    "FC": BASE_CATEGORIES["FC"]
+    "FC": "Feedstock configuration in `conda-forge.yml`."
 }
 
 

@@ -5,15 +5,12 @@ Messages concerning recipe files (`meta.yaml`, `recipe.yaml`).
 from dataclasses import asdict, dataclass
 from typing import ClassVar, Literal, TypeAlias
 
-from conda_smithy.linter.messages.base import (
-    _BaseMessage,
-    CATEGORIES as BASE_CATEGORIES
-)
+from conda_smithy.linter.messages.base import _BaseMessage
 
 CATEGORIES = {
-    "R": BASE_CATEGORIES["R"],
-    "R0": BASE_CATEGORIES["R0"],
-    "R1": BASE_CATEGORIES["R1"],
+    "R": "All recipe versions",
+    "R0": "Recipe v0 (`meta.yaml`)",
+    "R1": "Recipe v1 (`recipe.yaml`)",
 }
 RECIPE_VERSIONS: TypeAlias = Literal[0, 1]
 
