@@ -12,7 +12,7 @@ Categories:
 - [`RC`: All recipe variants files](#RC)
 
 <a id='CBC'></a>
-## `CBC`: Issues specific to `conda_build_config.yaml`
+## `CBC`: Recipe configuration in `conda_build_config.yaml`
 
 <a id='CBC-000'></a>
 ### ~~`CBC-000`: `CBCMacOSDeploymentTargetConflict`~~
