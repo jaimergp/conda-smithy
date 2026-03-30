@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from conda_smithy.linter.messages.base import _BaseMessage
 
 CATEGORIES = {
-    "FC": "Feedstock configuration in `conda-forge.yml`."
+    "FC": "Feedstock configuration in `conda-forge.yml`.",
 }
 
 

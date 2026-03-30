@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from conda_smithy.linter.messages.base import _BaseMessage
 
 CATEGORIES = {
-    "CF": "conda-forge specific rules"
+    "CF": "conda-forge specific rules",
 }
 
 

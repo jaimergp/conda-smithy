@@ -40,7 +40,7 @@ def _module_classes_in_source_order(module):
         return inspect.getsourcelines(cls)[1]
 
     classes = _message_classes(module)
-    classes.sort(key=lambda cls: definition_line_number(cls))
+    classes.sort(key=definition_line_number)
     return [cls for cls in classes]
 
 
