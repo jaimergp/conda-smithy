@@ -7,6 +7,7 @@ text, its identifier and the necessary variables.
 
 from dataclasses import asdict
 from inspect import cleandoc
+from string import Template
 from typing import ClassVar, Literal, Self
 
 
@@ -47,8 +48,12 @@ class _BaseMessage:
     def _render(self) -> str:
         """
         Formats the `.message` text by using the dataclass attributes.
+
+        Uses `string.Template.safe_substitute`, so `$name` and `${name}` are
+        replacement fields. Literal `$` signs must be written as `$$`.
+        Curly braces are never interpreted and need no escaping.
         """
-        return cleandoc(self.message.format(**self._render_attributes()))
+        return cleandoc(Template(self.message).safe_substitute(self._render_attributes()))
 
     def _render_attributes(self) -> dict[str, str]:
         """
