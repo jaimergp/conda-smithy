@@ -127,11 +127,11 @@ def test_message_registry_integrity(module):
 @pytest.mark.parametrize("module", MESSAGE_MODULES)
 def test_message_template_fields_are_valid(module):
     """
-    Check that every ``${word}`` reference in a ``message`` string corresponds
+    Check that every `${word}` reference in a `message` string corresponds
     to an actual dataclass field on the same class.
 
-    This catches typos and references to non-existent fields: ``string.Template``
-    uses ``safe_substitute``, so unknown ``$name`` tokens are silently left
+    This catches typos and references to non-existent fields: `string.Template`
+    uses `safe_substitute`, so unknown `$name` tokens are silently left
     as-is, meaning a misspelled field name would appear verbatim in the
     rendered message shown to users.
     """
