@@ -4,7 +4,6 @@ Messages concerning recipe files (`meta.yaml`, `recipe.yaml`).
 
 from dataclasses import asdict, dataclass
 from typing import ClassVar, Literal, TypeAlias
-from inspect import cleandoc
 
 from conda_smithy.linter.messages.base import _BaseMessage
 
@@ -59,7 +58,7 @@ class UnexpectedSection(_BaseMessage):
 class SectionOrder(_BaseMessage):
     """
     The top-level sections of a recipe file must always follow the same order.
-    Please refer to linter rule {R-000} (`RecipeUnexpectedSection`) for more
+    Please refer to linter rule [`R-000`](#R-000) (`RecipeUnexpectedSection`) for more
     details.
     """
 
