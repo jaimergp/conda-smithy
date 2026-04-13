@@ -4,6 +4,7 @@ Messages concerning recipe files (`meta.yaml`, `recipe.yaml`).
 
 from dataclasses import asdict, dataclass
 from typing import ClassVar, Literal, TypeAlias
+from inspect import cleandoc
 
 from conda_smithy.linter.messages.base import _BaseMessage
 
@@ -22,6 +23,16 @@ RECIPE_VERSIONS: TypeAlias = Literal[0, 1]
 class RecipeUnexpectedSection(_BaseMessage):
     """
     Recipe files must not contain unknown top-level keys.
+    For recipe version 0, the expected keys are (in this order): 
+    {VERSION_0_LIST}
+ 
+    For other versions, it depends if you are generating one or
+    multiple artifacts. For single artifacts, the expected keys are
+    (in this order):
+    {SINGLE_OUTPUT_LIST}
+
+    For multiple artifacts, the expected keys are (in this order):
+    {MULTIPLE_OUTPUT_LIST}
     """
 
     kind = "lint"
@@ -29,11 +40,27 @@ class RecipeUnexpectedSection(_BaseMessage):
     message = "The top level meta key ${section} is unexpected"
     section: str
 
+    @classmethod
+    def documentation(cls) -> str:
+        from conda_smithy.linter.utils import EXPECTED_SECTION_ORDER
+        from conda_smithy.linter.conda_recipe_v1_linter import (
+            EXPECTED_SINGLE_OUTPUT_SECTION_ORDER, 
+            EXPECTED_MULTIPLE_OUTPUT_SECTION_ORDER
+        )
+        doc = super().documentation()
+        formatted_doc = doc.format(
+            VERSION_0_LIST=f"- {'\n- '.join(EXPECTED_SECTION_ORDER)}",
+            SINGLE_OUTPUT_LIST=f"- {'\n- '.join(EXPECTED_SINGLE_OUTPUT_SECTION_ORDER)}",
+            MULTIPLE_OUTPUT_LIST=f"- {'\n- '.join(EXPECTED_MULTIPLE_OUTPUT_SECTION_ORDER)}",
+        )
+        return formatted_doc
 
 @dataclass(kw_only=True)
 class RecipeSectionOrder(_BaseMessage):
     """
     The top-level sections of a recipe file must always follow the same order.
+    Please refer to linter rule {R-000} (`RecipeUnexpectedSection`) for more
+    details.
     """
 
     kind = "lint"
