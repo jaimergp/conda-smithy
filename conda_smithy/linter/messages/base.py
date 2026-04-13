@@ -39,6 +39,30 @@ class _BaseMessage:
     deprecated_in: ClassVar[str] = ""
 
     @classmethod
+    def category(cls) -> str:
+        """
+        Category identifier for this message (e.g. `R` or `CF).
+        """
+        return cls.identifier.split("-")[0]
+
+    @classmethod
+    def documentation(cls) -> str:
+        """
+        Override this to render dynamic content (e.g. import a list of valid keys from)
+        somewhere. For example:
+
+        ```python
+        @classmethod
+        def documentation(cls) -> str:
+            import random
+
+            doc = super().documentation()
+            return doc.format(variable=random.random())
+        ```
+        """
+        return cleandoc(cls.__doc__)
+
+    @classmethod
     def samples(cls) -> list[Self]:
         """
         Provides one or more example instances of the error message. Used in documentation.
@@ -46,14 +70,6 @@ class _BaseMessage:
         Not needed for static `message` strings.
         """
         return []
-
-    @classmethod
-    def documentation(cls) -> str:
-        """
-        Override this to render dynamic content (e.g. import a list of valid keys from)
-        somewhere.
-        """
-        return cleandoc(cls.__doc__)
 
     def _render(self) -> str:
         """
@@ -82,6 +98,16 @@ class _BaseMessage:
     def append_if_absent(
         self, iterable: list, test: Literal["isinstance", "str"] = "isinstance"
     ) -> None:
+        """
+        Appends itself to a list if there are no other instances of the message yet.
+
+        The `test` keyword argument offers two modes, passed as strings:
+
+        - `"isinstance"` will only result in an appended item if there are no other
+          instances of this class in the list (potentially with other arguments).
+        - `"str"` will only result in an appended item if there are no other items
+          in the list that match in string representation.
+        """
         if test == "isinstance":
             test = lambda a, b: isinstance(a, b.__class__)
         elif test == "str":

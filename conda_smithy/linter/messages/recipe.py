@@ -20,7 +20,7 @@ RECIPE_VERSIONS: TypeAlias = Literal[0, 1]
 
 
 @dataclass(kw_only=True)
-class RecipeUnexpectedSection(_BaseMessage):
+class UnexpectedSection(_BaseMessage):
     """
     Recipe files must not contain unknown top-level keys.
     For recipe version 0, the expected keys are (in this order): 
@@ -56,7 +56,7 @@ class RecipeUnexpectedSection(_BaseMessage):
         return formatted_doc
 
 @dataclass(kw_only=True)
-class RecipeSectionOrder(_BaseMessage):
+class SectionOrder(_BaseMessage):
     """
     The top-level sections of a recipe file must always follow the same order.
     Please refer to linter rule {R-000} (`RecipeUnexpectedSection`) for more
@@ -74,7 +74,7 @@ class RecipeSectionOrder(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeMissingAboutItem(_BaseMessage):
+class MissingAboutItem(_BaseMessage):
     """
     The `about` section requires three fields: homepage (`home` in v1), license, and summary.
     """
@@ -86,7 +86,7 @@ class RecipeMissingAboutItem(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeNoMaintainers(_BaseMessage):
+class NoMaintainers(_BaseMessage):
     """
     All recipes must list at least one maintainer under `extra/recipe-maintainers`.
     """
@@ -100,7 +100,7 @@ class RecipeNoMaintainers(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeMaintainersMustBeList(_BaseMessage):
+class MaintainersMustBeList(_BaseMessage):
     """
     The `extra/recipe-maintainers` only accepts a list of strings as a value.
     """
@@ -111,7 +111,7 @@ class RecipeMaintainersMustBeList(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeRequiredTests(_BaseMessage):
+class RequiredTests(_BaseMessage):
     """
     All recipes must have a non-empty `test` section.
     """
@@ -122,7 +122,7 @@ class RecipeRequiredTests(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeRecommendedTests(_BaseMessage):
+class RecommendedTests(_BaseMessage):
     """
     All recipes must have a non-empty `test` section.
     """
@@ -134,7 +134,7 @@ class RecipeRecommendedTests(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeUnknownLicense(_BaseMessage):
+class UnknownLicense(_BaseMessage):
     """
     All recipes must have a license identifier, but it can't be "unknown".
     """
@@ -145,7 +145,7 @@ class RecipeUnknownLicense(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeBuildNumberMissing(_BaseMessage):
+class BuildNumberMissing(_BaseMessage):
     """
     All recipes must define a `build.number` value.
     """
@@ -156,7 +156,7 @@ class RecipeBuildNumberMissing(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeRequirementsOrder(_BaseMessage):
+class RequirementsOrder(_BaseMessage):
     """
     The different subcategories of the `requirements` section must follow
     a strict order: `build`, `host`, `run`, `run_constrained`.
@@ -179,7 +179,7 @@ class RecipeRequirementsOrder(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeLicenseLicense(_BaseMessage):
+class LicenseFieldMentionsLicense(_BaseMessage):
     """
     Licenses should omit the term 'License' in its name.
     """
@@ -190,7 +190,7 @@ class RecipeLicenseLicense(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeTooManyEmptyLines(_BaseMessage):
+class TooManyEmptyLines(_BaseMessage):
     """
     Recipe files should end with a single empty line, not more.
     """
@@ -206,7 +206,7 @@ class RecipeTooManyEmptyLines(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeTooFewEmptyLines(_BaseMessage):
+class TooFewEmptyLines(_BaseMessage):
     """
     Recipe files should end with a single empty line.
     """
@@ -220,7 +220,7 @@ class RecipeTooFewEmptyLines(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeLicenseFamily(_BaseMessage):
+class LicenseFamily(_BaseMessage):
     """
     The field `license_file` must be always present.
     """
@@ -231,7 +231,7 @@ class RecipeLicenseFamily(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeName(_BaseMessage):
+class InvalidPackageName(_BaseMessage):
     """
     The recipe `name` can only contain certain characters:
 
@@ -249,7 +249,7 @@ class RecipeName(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeMissingVersion(_BaseMessage):
+class MissingVersion(_BaseMessage):
     """
     The package `version` field is required.
     """
@@ -260,7 +260,7 @@ class RecipeMissingVersion(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeInvalidVersion(_BaseMessage):
+class InvalidVersion(_BaseMessage):
     """
     The package `version` field must be a valid version string.
     """
@@ -273,7 +273,7 @@ class RecipeInvalidVersion(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipePinnedNumpy(_BaseMessage):
+class PinnedNumpy(_BaseMessage):
     """
     See <https://conda-forge.org/docs/maintainer/knowledge_base.html#linking-numpy>
     """
@@ -290,7 +290,7 @@ class RecipePinnedNumpy(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeUnexpectedSubsection(_BaseMessage):
+class UnexpectedSubsection(_BaseMessage):
     """
     This check ensures that the passed recipe conforms to the expected recipe v0 schema.
 
@@ -309,7 +309,7 @@ class RecipeUnexpectedSubsection(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeSourceHash(_BaseMessage):
+class SourceHash(_BaseMessage):
     """
     All recipe source URLs must have a hash checksum for integrity checks.
     """
@@ -323,7 +323,7 @@ class RecipeSourceHash(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeNoarchValue(_BaseMessage):
+class NoarchValue(_BaseMessage):
     """
     The `build.noarch` field can only take `python` or `generic` as a value.
     """
@@ -339,7 +339,7 @@ class RecipeNoarchValue(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeRequirementJoinVersionOperator(_BaseMessage):
+class RequirementJoinVersionOperator(_BaseMessage):
     """
     conda recipes should use the three-field matchspec syntax to express requirements:
     `name [version [build]]`. This means having no spaces between operator and version
@@ -360,7 +360,7 @@ class RecipeRequirementJoinVersionOperator(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeRequirementSeparateNameVersion(_BaseMessage):
+class RequirementSeparateNameVersion(_BaseMessage):
     """
     conda recipes should use the three-field matchspec syntax to express requirements:
     `name [version [build]]`. This means having a space between name and version.
@@ -380,7 +380,7 @@ class RecipeRequirementSeparateNameVersion(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeLanguageHostRun(_BaseMessage):
+class LanguageHostRun(_BaseMessage):
     """
     Packages may depend on certain languages (e.g. Python, R) that require depending
     on the language runtime both in `host` and `run`.
@@ -393,7 +393,7 @@ class RecipeLanguageHostRun(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeLanguageHostRunUnpinned(_BaseMessage):
+class LanguageHostRunUnpinned(_BaseMessage):
     """
     Packages may depend on certain languages (e.g. Python, R) that require depending
     on the language runtime both in `host` and `run`. They should not pin it to a
@@ -410,7 +410,7 @@ class RecipeLanguageHostRunUnpinned(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeJinjaExpression(_BaseMessage):
+class JinjaExpression(_BaseMessage):
     """
     Jinja expressions should add a space between the double curly braces.
     """
@@ -430,7 +430,7 @@ class RecipeJinjaExpression(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipePythonLowerBound(_BaseMessage):
+class PythonLowerBound(_BaseMessage):
     """
     Noarch Python recipes should always pin the lower bound on their `python` requirement.
     """
@@ -447,7 +447,7 @@ class RecipePythonLowerBound(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipePinSubpackagePinCompatible(_BaseMessage):
+class PinSubpackagePinCompatible(_BaseMessage):
     """
     The Jinja functions `pin_subpackage` and `pin_compatible` may be confused
     because both would add version constraints to a package name. However, they
@@ -479,7 +479,7 @@ class RecipePinSubpackagePinCompatible(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeCompiledWheelsNotAllowed(_BaseMessage):
+class CompiledWheelsNotAllowed(_BaseMessage):
     """
     Python wheels are often discouraged as package sources. This is especially the case
     for compiled wheels, which are forbidden.
@@ -499,7 +499,7 @@ class RecipeCompiledWheelsNotAllowed(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipePureWheelsNotAllowed(_BaseMessage):
+class PureWheelsNotAllowed(_BaseMessage):
     """
     Python wheels are often discouraged as package sources. This is also the case
     for pure Python wheels when building non-noarch packages.
@@ -518,7 +518,7 @@ class RecipePureWheelsNotAllowed(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipePureWheelsNotAllowedNoarch(_BaseMessage):
+class PureWheelsNotAllowedNoarch(_BaseMessage):
     """
     Python wheels are often discouraged as package sources. However, pure Python
     wheels may be used as a source for noarch Python packages, although sdists are preferred.
@@ -538,7 +538,7 @@ class RecipePureWheelsNotAllowedNoarch(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeRustLicenses(_BaseMessage):
+class RustLicenses(_BaseMessage):
     """
     <https://conda-forge.org/docs/maintainer/adding_pkgs/#rust>
     """
@@ -552,7 +552,7 @@ class RecipeRustLicenses(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeGoLicenses(_BaseMessage):
+class GoLicenses(_BaseMessage):
     """
     <https://conda-forge.org/docs/maintainer/adding_pkgs/#go>
     """
@@ -566,7 +566,7 @@ class RecipeGoLicenses(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeStdlibJinja(_BaseMessage):
+class StdlibJinja(_BaseMessage):
     """
     https://github.com/conda-forge/conda-forge.github.io/issues/2102
     """
@@ -586,7 +586,7 @@ class RecipeStdlibJinja(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeStdlibSysroot(_BaseMessage):
+class StdlibSysroot(_BaseMessage):
     """
     https://github.com/conda-forge/conda-forge.github.io/issues/2102
     """
@@ -607,7 +607,7 @@ class RecipeStdlibSysroot(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeStdlibOsx(_BaseMessage):
+class StdlibOsx(_BaseMessage):
     """
     https://github.com/conda-forge/conda-forge.github.io/issues/2102
     """
@@ -628,7 +628,7 @@ class RecipeStdlibOsx(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeNotParsableLint(_BaseMessage):
+class NotParsableLint(_BaseMessage):
     """
     The conda recipe should be parsable by at least one backend.
     If none can parse it, this constitutes an error that needs to be remediated.
@@ -649,7 +649,7 @@ class RecipeNotParsableLint(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeNotParsableHint(_BaseMessage):
+class NotParsableHint(_BaseMessage):
     """
     The conda recipe should be parsable by at least one backend.
     Sometimes, only some backends fail, which is not critical, but should be looked into.
@@ -682,7 +682,7 @@ class RecipeNotParsableHint(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipePythonIsAbi3Bool(_BaseMessage):
+class PythonIsAbi3Bool(_BaseMessage):
     """
     https://github.com/conda-forge/conda-forge.github.io/issues/2102
     """
@@ -697,7 +697,7 @@ class RecipePythonIsAbi3Bool(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeExtraFeedstockNameSuffix(_BaseMessage):
+class ExtraFeedstockNameSuffix(_BaseMessage):
     """
     https://github.com/conda-forge/conda-forge.github.io/issues/2102
     """
@@ -712,7 +712,7 @@ class RecipeExtraFeedstockNameSuffix(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeVersionParsedAsFloat(_BaseMessage):
+class VersionParsedAsFloat(_BaseMessage):
     """
     https://github.com/conda-forge/conda-forge.github.io/issues/2102
     """
@@ -737,7 +737,7 @@ class RecipeVersionParsedAsFloat(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeSuggestNoarch(_BaseMessage):
+class SuggestNoarch(_BaseMessage):
     """
     `noarch` packages are strongly preferred when possible.
     See https://conda-forge.org/docs/maintainer/knowledge_base.html#noarch-builds.
@@ -752,7 +752,7 @@ class RecipeSuggestNoarch(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeScriptShellcheckReport(_BaseMessage):
+class ScriptShellcheckReport(_BaseMessage):
     """
     This issue is raised when `shellcheck` is enabled and detects problems
     in your build `.sh` scripts.
@@ -784,7 +784,7 @@ class RecipeScriptShellcheckReport(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeScriptShellcheckFailure(_BaseMessage):
+class ScriptShellcheckFailure(_BaseMessage):
     """
     This issue is raised when `shellcheck` is enabled but could not
     run successfully (something went wrong).
@@ -796,7 +796,7 @@ class RecipeScriptShellcheckFailure(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeLicenseSPDX(_BaseMessage):
+class LicenseSPDX(_BaseMessage):
     """
     The `license` field must be a valid SPDX identifier.
 
@@ -816,7 +816,7 @@ class RecipeLicenseSPDX(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeInvalidLicenseException(_BaseMessage):
+class InvalidLicenseException(_BaseMessage):
     """
     The `license` field may accept some SPDX exception expressions, as controlled
     in [this file](https://github.com/conda-forge/conda-smithy/blob/main/conda_smithy/linter/license_exceptions.txt)
@@ -834,7 +834,7 @@ class RecipeInvalidLicenseException(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipePythonBuildBackendHost(_BaseMessage):
+class PythonBuildBackendHost(_BaseMessage):
     """
     Build backends in Python packages must be explictly added to `host`.
     """
@@ -853,7 +853,7 @@ class RecipePythonBuildBackendHost(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipePythonMinPin(_BaseMessage):
+class PythonMinPin(_BaseMessage):
     """
     Python packages should depend on certain `>={min_version}` at runtime,
     but build and test against `{min_version}.*`.
@@ -889,7 +889,7 @@ class RecipePythonMinPin(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeSpaceSeparatedSpecs(_BaseMessage):
+class SpaceSeparatedSpecs(_BaseMessage):
     """
     Prefer `name [version [build]]` match spec syntax.
     """
@@ -917,7 +917,7 @@ class RecipeSpaceSeparatedSpecs(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeOsVersion(_BaseMessage):
+class OsVersion(_BaseMessage):
     """
     Prefer `name [version [build]]` match spec syntax.
     """
@@ -935,7 +935,7 @@ class RecipeOsVersion(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeUsePip(_BaseMessage):
+class UsePip(_BaseMessage):
     """
     Python packages should be built with `pip install ...`, not `python setup.py install`,
     which is deprecated.
@@ -950,7 +950,7 @@ class RecipeUsePip(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeUsePyPiOrg(_BaseMessage):
+class UsePyPiOrg(_BaseMessage):
     """
     Grayskull and the conda-forge example recipe used to have pypi.io as a default,
     but the canonical URL is now PyPI.org.
@@ -971,7 +971,7 @@ class RecipeUsePyPiOrg(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeFormattedSelectors(_BaseMessage):
+class FormattedSelectors(_BaseMessage):
     """
     Recipe format v0 (`meta.yaml`) supports the notion of line selectors
     as trailing comments:
@@ -997,7 +997,7 @@ class RecipeFormattedSelectors(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeOldPythonSelectorsLint(_BaseMessage):
+class OldPythonSelectorsLint(_BaseMessage):
     """
     Recipe v0 selectors used to include one Python version selector
     per release, like `py27` for Python 2.7 and `py35` for Python 3.5.
@@ -1016,7 +1016,7 @@ class RecipeOldPythonSelectorsLint(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeOldPythonSelectorsHint(_BaseMessage):
+class OldPythonSelectorsHint(_BaseMessage):
     """
     Recipe v0 selectors (see [`R0-002`](#r0-002)) used to include one Python
     version selector per release, like `py27` for Python 2.7 and `py35` for Python 3.5.
@@ -1034,7 +1034,7 @@ class RecipeOldPythonSelectorsHint(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeNoarchSelectorsV0(_BaseMessage):
+class NoarchSelectorsV0(_BaseMessage):
     """
     Noarch packages are not generally compatible with v0 selectors
     """
@@ -1059,7 +1059,7 @@ class RecipeNoarchSelectorsV0(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeJinjaDefinitions(_BaseMessage):
+class JinjaDefinitions(_BaseMessage):
     """
     In v0 recipes, Jinja definitions must follow a particular style.
     """
@@ -1076,7 +1076,7 @@ class RecipeJinjaDefinitions(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeLegacyToolchain(_BaseMessage):
+class LegacyToolchain(_BaseMessage):
     """
     The `toolchain` package is deprecated. Use compilers as outlined in
     <https://conda-forge.org/docs/maintainer/knowledge_base.html#compilers>.
@@ -1098,7 +1098,7 @@ class RecipeLegacyToolchain(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeNoCommentSelectors(_BaseMessage):
+class NoCommentSelectors(_BaseMessage):
     """
     Recipe v0 selectors (see [`R0-002`](#r0-002)) are not supported in v1 recipes.
     """
@@ -1113,7 +1113,7 @@ class RecipeNoCommentSelectors(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeNoarchSelectorsV1(_BaseMessage):
+class NoarchSelectorsV1(_BaseMessage):
     """
     Noarch packages are not generally compatible with v1 conditional blocks.
     """
@@ -1133,7 +1133,7 @@ class RecipeNoarchSelectorsV1(_BaseMessage):
 
 
 @dataclass(kw_only=True)
-class RecipeRattlerBldBat(_BaseMessage):
+class RattlerBldBat(_BaseMessage):
     """
     `rattler-build` does not use `bld.bat` scripts, but `build.bat`.
     """
