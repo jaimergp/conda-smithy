@@ -2,7 +2,13 @@
 # update the conda-forge.yml and/or the recipe/meta.yaml.
 # -*- mode: yaml -*-
 
-{%- set vars = namespace(store_build_artifacts=False, free_disk_space=False, create_pagefile_linux=False, create_pagefile_win=False) %}
+{%- set vars = namespace(
+  store_build_artifacts=False,
+  free_disk_space=False,
+  create_pagefile_linux=False,
+  create_pagefile_win=False,
+  extra_tests=False
+) %}
 {%- for data in configs %}
   {%- if data.store_build_artifacts %}
     {%- set vars.store_build_artifacts = True %}
@@ -18,6 +24,9 @@
   {%- endif %}
   {%- if data.gha_os == "windows" and data.resize_partitions %}
     {%- set vars.resize_win_partitions = True %}
+  {%- endif %}
+  {%- if data.gha_extra_tests %}
+    {%- set vars.extra_tests = True %}
   {%- endif %}
 {%- endfor %}
 
@@ -53,7 +62,7 @@ jobs:
         include:
         {%- for data in configs %}
           - CONFIG: {{ data.config_name }}
-        {%- if data.store_build_artifacts %}
+        {%- if data.store_build_artifacts || data.extra_tests %}
             CONFIG_SHORT: {{ data.config_name_short }}
         {%- endif %}
         {%- if data.build_platform.startswith("linux") %}
@@ -63,6 +72,7 @@ jobs:
             UPLOAD_PACKAGES: {{ data.upload }}
             build_workspace_dir: {{ data.build_workspace_dir }}
             docker_run_args: {{ data.docker_run_args }}
+            extra_tests: {{ data.gha_extra_tests }}
             free_disk_space: {{ data.free_disk_space }}
             os: {{ data.gha_os }}
             pagefile_size: {{ data.pagefile_size }}
@@ -245,7 +255,7 @@ jobs:
 {%- for secret in secrets %}
         {{ secret }}: {% raw %}${{{% endraw %} secrets.{{ secret }} {% raw %}}}{% endraw %}
 {%- endfor %}
-{%- if vars.store_build_artifacts %}
+{%- if vars.store_build_artifacts || vars.extra_tests %}
 
     - name: Determine build outcome
       # this is to merge the status of the linux/osx/win builds into
@@ -274,7 +284,7 @@ jobs:
       id: prepare-artifacts
       shell: bash
       # we do not want to trigger artefact creation if the build was cancelled
-      if: {% raw %}${{ always() && steps.determine-status.outputs.status != 'cancelled' && matrix.STORE_BUILD_ARTIFACTS }}{% endraw %}
+      if: {% raw %}${{ always() && steps.determine-status.outputs.status != 'cancelled' && (matrix.STORE_BUILD_ARTIFACTS || matrix.extra_tests) }}{% endraw %}
       env:
         CI: github_actions
         CONDA_BLD_PATH: {% raw %}${{ matrix.build_workspace_dir }}{% endraw %}
@@ -322,4 +332,44 @@ jobs:
         path: {% raw %}${{ steps.prepare-artifacts.outputs.ENV_ARTIFACT_PATH }}{% endraw %}
         retention-days: {{ github_actions.artifact_retention_days }}
       continue-on-error: true
+{%- endif %}
+{%- if vars.extra_tests %}
+    - name: Export runner label for tests
+      if: matrix.extra_tests
+      id: extra-tests
+      shell: bash
+      env:
+        CONFIG_SHORT: ${{ matrix.CONFIG_SHORT }}
+        EXTRA_TESTS_LABELS: ${{ matrix.extra_tests }}
+      run: |
+        echo "CONFIG_SHORT=$CONFIG_SHORT" >> $GITHUB_OUTPUT
+        echo "EXTRA_TESTS_LABELS=$EXTRA_TESTS_LABELS" >> $GITHUB_OUTPUT
+        if [[ -f recipe/recipe.yaml ]]; then
+          echo "RECIPE_VERSION=1" >> $GITHUB_OUTPUT
+        else
+          echo "RECIPE_VERSION=0" >> $GITHUB_OUTPUT
+        fi
+{%- endif %}
+{%- if vars.extra_tests %}
+  extra-tests:
+    name: {% raw %}${{ needs.build.steps.extra-tests.outputs.CONFIG_SHORT }}{% endraw %}
+    runs-on: {% raw %}${{ needs.build.steps.extra-tests.outputs.EXTRA_TEST_LABELS }}{% endraw %}
+    timeout-minutes: {{ github_actions.timeout_minutes }}
+    needs: [build]
+      - uses: actions/download-artifact@main
+        with:
+          name: {% raw %}${{ needs.build.extra-tests.outputs.ENV_ARTIFACT_NAME }}{% endraw %} 
+      - uses: prefix-dev/setup-pixi
+      - name: Run tests
+        shell: bash
+        env:
+          RECIPE_VERSION: {% raw %}${{ needs.build.steps.extra-tests.outputs.RECIPE_VERSION }}{% endraw %}
+          ENV_ARTIFACT_NAME: {% raw %}${{ needs.build.extra-tests.outputs.ENV_ARTIFACT_NAME }}{% endraw %}
+          EXTRA_TESTS_CI: "1"
+        run: |
+          if [[ $RECIPE_VERSION == 0 ]]; then
+            pixi exec conda-build --test --override-channels -c ${CONDA_CHANNELS:-conda-forge} pkgs/"${ENV_ARTIFACT_NAME}"*.conda
+          else
+            pixi exec rattler-build --package-file pkgs/"${ENV_ARTIFACT_NAME}"*.conda
+          fi
 {%- endif %}

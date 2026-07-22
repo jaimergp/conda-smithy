@@ -764,6 +764,7 @@ def _collapse_subpackage_variants(
 
     if forge_config["github_actions"].get("enabled"):
         always_keep_keys.add("github_actions_labels")
+        always_keep_keys.add("github_actions_labels_tests")
 
     all_used_vars.update(always_keep_keys)
     all_used_vars.update(top_level_vars)
@@ -1521,15 +1522,19 @@ def _get_build_setup_line(forge_dir, platform, forge_config):
 
             """)
         elif platform == "win":
-            build_setup += textwrap.dedent("""\
+            build_setup += textwrap.dedent(
+                """\
                 :: Overriding global run_conda_forge_build_setup_win with local copy.
                 CALL {recipe_dir}\\run_conda_forge_build_setup_win
-            """.format(recipe_dir=forge_config["recipe_dir"]))
+            """.format(recipe_dir=forge_config["recipe_dir"])
+            )
         else:
-            build_setup += textwrap.dedent("""\
+            build_setup += textwrap.dedent(
+                """\
                 # Overriding global run_conda_forge_build_setup_osx with local copy.
                 source {recipe_dir}/run_conda_forge_build_setup_osx
-            """.format(recipe_dir=forge_config["recipe_dir"]))
+            """.format(recipe_dir=forge_config["recipe_dir"])
+            )
     else:
         if platform == "win":
             build_setup += textwrap.dedent("""\
@@ -1594,13 +1599,15 @@ def generate_yum_requirements(forge_config, forge_dir):
                 "yum_requirements.txt, please remove the file "
                 "or add some."
             )
-        yum_build_setup = textwrap.dedent("""\
+        yum_build_setup = textwrap.dedent(
+            """\
 
             # Install the yum requirements defined canonically in the
             # "recipe/yum_requirements.txt" file. After updating that file,
             # run "conda smithy rerender" and this line will be updated
             # automatically.
-            /usr/bin/sudo -n yum install -y {}""".format(" ".join(requirements)))
+            /usr/bin/sudo -n yum install -y {}""".format(" ".join(requirements))
+        )
     return yum_build_setup
 
 
@@ -1885,6 +1892,12 @@ def _github_actions_specific_setup(jinja_env, forge_config, forge_dir, platform)
                     )
                 )
             )
+
+        # `github_actions_labels_tests` enables extra jobs for each package
+        # each entry is a space separated sequence of GHA runs-on labels
+        data["gha_extra_tests"] = (
+            data["config"].get("github_actions_labels_tests", "").split() or False
+        )
 
         data["gha_runs_on"] = []
         with_gpu = False
