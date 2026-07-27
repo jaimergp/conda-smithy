@@ -358,18 +358,75 @@ jobs:
     needs: [build]
       - uses: actions/download-artifact@main
         with:
-          name: {% raw %}${{ needs.build.extra-tests.outputs.ENV_ARTIFACT_NAME }}{% endraw %} 
-      - uses: prefix-dev/setup-pixi
-      - name: Run tests
-        shell: bash
-        env:
-          RECIPE_VERSION: {% raw %}${{ needs.build.steps.extra-tests.outputs.RECIPE_VERSION }}{% endraw %}
-          ENV_ARTIFACT_NAME: {% raw %}${{ needs.build.extra-tests.outputs.ENV_ARTIFACT_NAME }}{% endraw %}
-          EXTRA_TESTS_CI: "1"
-        run: |
-          if [[ $RECIPE_VERSION == 0 ]]; then
-            pixi exec conda-build --test --override-channels -c ${CONDA_CHANNELS:-conda-forge} pkgs/"${ENV_ARTIFACT_NAME}"*.conda
-          else
-            pixi exec rattler-build --package-file pkgs/"${ENV_ARTIFACT_NAME}"*.conda
-          fi
+          name: {% raw %}${{ needs.build.extra-tests.outputs.ENV_ARTIFACT_NAME }}{% endraw %}
+
+    - name: Configure binfmt_misc
+      if: matrix.os == 'ubuntu'
+      shell: bash
+      run: |
+        if [[ "$(uname -m)" == "x86_64" ]]; then
+          docker run --rm --privileged multiarch/qemu-user-static:register --reset --credential yes
+        fi
+
+    - name: Test on Linux
+      id: test-linux
+      if: matrix.os == 'ubuntu'
+      env:
+        CI: github_actions
+        CONDA_SMITHY_STAGE: 'test'
+        CONDA_BLD_PATH: {% raw %}${{ matrix.build_workspace_dir }}{% endraw %}
+        CONDA_FORGE_DOCKER_RUN_ARGS: {% raw %}${{ matrix.docker_run_args }}{% endraw %}
+        CONFIG: {% raw %}${{ matrix.CONFIG }}{% endraw %}
+        MINIFORGE_HOME: {% raw %}${{ matrix.tools_install_dir }}{% endraw %}
+        DOCKER_IMAGE: {% raw %}${{ matrix.DOCKER_IMAGE }}{% endraw %}
+        RATTLER_BUILD_COLOR: always
+        RATTLER_BUILD_ENABLE_GITHUB_INTEGRATION: 'true'
+      shell: bash
+      run: |
+        export CONDA_BLD_PATH="${CONDA_BLD_PATH/#~/${HOME}}"
+        export FEEDSTOCK_NAME="$(basename $GITHUB_REPOSITORY)"
+        export MINIFORGE_HOME="${MINIFORGE_HOME/#~/${HOME}}"
+        ./.scripts/run_docker_build.sh
+
+    - name: Test on macOS
+      id: test-macos
+      if: matrix.os == 'macos'
+      env:
+        CI: github_actions
+        CONDA_BLD_PATH: {% raw %}${{ matrix.build_workspace_dir }}{% endraw %}
+        CONDA_SMITHY_STAGE: 'test'
+        CONFIG: {% raw %}${{ matrix.CONFIG }}{% endraw %}
+        MINIFORGE_HOME: {% raw %}${{ matrix.tools_install_dir }}{% endraw %}
+        RATTLER_BUILD_COLOR: always
+        RATTLER_BUILD_ENABLE_GITHUB_INTEGRATION: 'true'
+      shell: bash
+      run: |
+        export CONDA_BLD_PATH="${CONDA_BLD_PATH/#~/${HOME}}"
+        export FEEDSTOCK_NAME="$(basename $GITHUB_REPOSITORY)"
+        export MINIFORGE_HOME="${MINIFORGE_HOME/#~/${HOME}}
+        ./.scripts/run_osx_build.sh
+
+{%- for choco_pkg in choco %}
+    - name: "Install Chocolatey Package: {{ choco_pkg }}"
+      if matrix.os == 'windows'
+      run: |
+        choco install {{ choco_pkg }} -fdv -y --debug
+{% endfor %}
+
+    - name: Test on windows
+      id: test-windows
+      if: matrix.os == 'windows'
+      shell: cmd
+      run: |
+        call ".scripts\run_win_build.bat"
+      env:
+        CI: github_actions
+        CONDA_BLD_PATH: {% raw %}${{ matrix.build_workspace_dir }}{% endraw %}
+        CONDA_SMITHY_STAGE: 'test'
+        CONFIG: {% raw %}${{ matrix.CONFIG }}{% endraw %}
+        MINIFORGE_HOME: {% raw %}${{ matrix.tools_install_dir }}{% endraw %}
+        PYTHONUNBUFFERED: 1
+        RATTLER_BUILD_COLOR: always
+        RATTLER_BUILD_ENABLE_GITHUB_INTEGRATION: 'true'
+
 {%- endif %}

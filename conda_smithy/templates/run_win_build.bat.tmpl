@@ -140,6 +140,50 @@ echo Running build setup
 if !errorlevel! neq 0 exit /b !errorlevel!
 {%- endif %}
 
+{#- Test-only workflow (artifacts built in previous step); exits early #}
+if "%CONDA_SMITHY_STAGE%"=="build" (
+    if "!TEST_ARTIFACT_PATH!"=="" (
+        echo ERROR: Must provide ^%TEST_ARTIFACT_PATH^% pointing to the conda artifact to test
+        exit /b 1
+    )
+
+    set "channels=--channel conda-forge"
+    {#- We need to add the grandparent of the artifact (channel) if the parent is a channel subdir #}
+    for %%I in ("!TEST_ARTIFACT_PATH!") do (
+        set "MAYBE_SUBDIR=%%~dpI"
+        for %%J in ("%%~dpI.") do (
+            set "MAYBE_SUBDIR_NAME=%%~nxJ"
+            set "MAYBE_CHANNEL=%%~dpJ"
+        )
+    )
+    for %%A in (linux-64 linux-aarch64 linux-ppc64le osx-64 osx-arm64 win-64 win-arm64 noarch) do (
+        if /I "%%A"=="!MAYBE_SUBDIR_NAME!" (
+            set "channels=!channels! --channel !MAYBE_CHANNEL!"
+        )
+    )
+    if "!TEST_ARTIFACT_RECIPE_FORMAT!"=="" (
+        if exist "!RECIPE_ROOT!\recipe.yaml" (
+            set "TEST_ARTIFACT_RECIPE_FORMAT=1"
+        ) else if exist "!RECIPE_ROOT!\meta.yaml" (
+            set "TEST_ARTIFACT_RECIPE_FORMAT=0"
+        ) else (
+            echo ERROR: Must set ^%TEST_ARTIFACT_RECIPE_FORMAT^% to 1 or 0, depending on the recipe format used to build ^%TEST_ARTIFACT_RECIPE_FORMAT^%
+            exit /b 1
+        )
+    )
+    if "!TEST_ARTIFACT_RECIPE_FORMAT!"=="1" (
+        rattler-build test !channels! --package-file "!TEST_ARTIFACT_PATH!"
+        exit /b 0
+    )
+    if "!TEST_ARTIFACT_RECIPE_FORMAT!"=="0" (
+        conda-build --test --override-channels !channels! "!TEST_ARTIFACT_PATH!"
+        exit /b 0
+    )
+    echo ERROR: ^%TEST_ARTIFACT_RECIPE_FORMAT^% must be set to 1 or 0
+    exit /b 1
+)
+
+{#- Build workflow #}
 if EXIST LICENSE.txt (
     echo Copying feedstock license
     copy LICENSE.txt "{{ recipe_dir }}\\recipe-scripts-license.txt"

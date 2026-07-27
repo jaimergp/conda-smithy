@@ -19,6 +19,7 @@ source ${FEEDSTOCK_ROOT}/.scripts/logging_utils.sh
 export PYTHONUNBUFFERED=1
 export RECIPE_ROOT="${RECIPE_ROOT:-/home/conda/recipe_root}"
 export CI_SUPPORT="${FEEDSTOCK_ROOT}/.ci_support"
+export CONDA_SMITHY_STAGE="${CONDA_SMITHY_STAGE:-build}"  # one of: build, test
 export CONFIG_FILE="${CI_SUPPORT}/${CONFIG}.yaml"
 export RATTLER_CACHE_DIR="${FEEDSTOCK_ROOT}/build_artifacts/pkg_cache"
 {#- We are not handling CONDA_BLD_PATH here because it's already set in the condarc below #}
@@ -122,6 +123,42 @@ fi
 
 ( endgroup "Configuring conda" ) 2> /dev/null
 
+{#- Test-only workflow (artifacts built in previous step); exits early #}
+if [[ "${CONDA_SMITHY_STAGE}" == "test" ]]; then
+    if [[ -z "${TEST_ARTIFACT_PATH:-}" ]]; then
+        echo "ERROR: Must provide \$TEST_ARTIFACT_PATH pointing to the conda artifact to test"
+        exit 1
+    fi
+    channels="--channel conda-forge"
+    if [[ "$(basename $(dirname "$TEST_ARTIFACT_PATH"))" =~ ^(linux-64|linux-aarch64|linux-ppc64le|osx-64|osx-arm64|win-64|win-arm64|noarch)$ ]]; then
+      channels+=" --channel $(dirname "$(dirname "$TEST_ARTIFACT_PATH")")"
+    fi
+    if [[ -z "$TEST_ARTIFACT_RECIPE_FORMAT" ]]; then
+      if [[ -f "${RECIPE_ROOT}/recipe.yaml" ]]; then
+        TEST_ARTIFACT_RECIPE_FORMAT=1
+      elif [[ -f "${RECIPE_ROOT}/meta.yaml" ]]; then
+        TEST_ARTIFACT_RECIPE_FORMAT=0
+      else
+        echo "Must set \$TEST_ARTIFACT_RECIPE_FORMAT to 1 or 0, depending on the recipe format used to build \$TEST_ARTIFACT_RECIPE_FORMAT"
+        exit 1
+      fi
+    fi
+    case "${TEST_ARTIFACT_RECIPE_FORMAT}" in
+      "1")
+        rattler-build test $channels --package-file "${TEST_ARTIFACT_PATH}"
+      ;;
+      "0")
+        conda-build --test --override-channels $channels --channel conda-forge "${TEST_ARTIFACT_PATH}"
+      ;;
+      *)
+        echo "\$TEST_ARTIFACT_RECIPE_FORMAT must be 1 or 0"
+        exit 1
+      ;;
+    esac
+    exit 0
+fi
+
+{#- Build workflow #}
 if [[ -f "${FEEDSTOCK_ROOT}/LICENSE.txt" ]]; then
   cp "${FEEDSTOCK_ROOT}/LICENSE.txt" "${RECIPE_ROOT}/recipe-scripts-license.txt"
 fi
