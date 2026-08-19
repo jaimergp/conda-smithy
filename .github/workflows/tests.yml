@@ -47,6 +47,7 @@ jobs:
       - name: install conda-smithy
         run: |
           python -m pip install -v https://github.com/conda/conda/archive/refs/tags/26.7.1.zip --no-deps
+          python -m conda init
           python -m pip install -v --no-build-isolation -e .
 
       - name: install additional dependencies
