@@ -4810,6 +4810,33 @@ def test_lint_recipe_v1_python_version_independent_test_latest(text, expected_hi
             "3.10",
             False,
         ),
+        # v0: jinja redefinition -> no hint
+        (
+            "meta.yaml",
+            textwrap.dedent("""
+                {% set python_min = python_min %}
+
+                package:
+                  name: mypackage
+                  version: 1.0.0
+                """),
+            "3.10",
+            False,
+        ),
+        # v1: jinja redefinition -> no hint
+        (
+            "recipe.yaml",
+            textwrap.dedent("""
+                context:
+                  python_min: ${{ python_min }}
+
+                package:
+                  name: mypackage
+                  version: 1.0.0
+                """),
+            None,
+            False,
+        ),
     ],
     ids=(f"recipe-{i}" for i in count(1)),
 )

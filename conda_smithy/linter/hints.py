@@ -381,7 +381,7 @@ def hint_redundant_python_min(meta, recipe_text, recipe_version, hints):
         )
         declared = match.group(1) if match else None
 
-    if declared is None:
+    if declared is None or "${{" in declared or declared == "python_min":
         return
 
     global_python_min = get_global_pinning_python_min()
