@@ -2530,9 +2530,11 @@ def render_pixi(jinja_env, forge_config, forge_dir):
             if filename.endswith(".yaml"):
                 variant_name, _ = os.path.splitext(filename)
                 variants[variant_name] = variant_config = {}
-                with open(filename) as f:
-                    data = yaml.load(f)
+                with open(os.path.join(ci_support_path, filename)) as f:
+                    data = yaml.safe_load(f)
                 if target_platform := data.get("target_platform"):
+                    if not isinstance(target_platform, str):
+                        target_platform = target_platform[0]
                     variant_config["target_platform_flag"] = (
                         f"--target-platform {target_platform}"
                     )
